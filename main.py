@@ -1,75 +1,64 @@
-# 寧心雪 LINE 語音助手
-# 建立一個簡單的 Flask 應用，接收 LINE 訊息並透過 OpenAI 語音 API 回傳語音
+from flask import Flask, request, abort
+from linebot import LineBotApi, WebhookHandler
+from linebot.exceptions import InvalidSignatureError
+from linebot.models import MessageEvent, TextMessage, AudioSendMessage, TextSendMessage
 
-from flask import Flask, request, abort, send_file
-from io import BytesIO
-import openai
+from gtts import gTTS
+import tempfile
 import requests
 import os
 
 app = Flask(__name__)
 
-# === 設定區 ===
-CHANNEL_ACCESS_TOKEN = "hxUFQfFxtfz/d54PHXNiLnapiTaRmBjyMYzeeUhzI4BZF8/sSiFSfV+SVOunurTc4jKvY/ZgbhvjqITjho604IYLz8SkC9l8G7zWuSLnPnC6q6rCY6Hs/GoNeQmEvN9+5pZh+svlwK+JEC9UEtWS+AdB04t89/1O/w1cDnyilFU="
-CHANNEL_SECRET = "f6729885cc7fd58fe025bc0ef424709f"
-openai.api_key = os.getenv("OPENAI_API_KEY")  # 在部署環境中設好 OPENAI_API_KEY 環境變數
+# LINE API key（請替換成妳的）
+LINE_CHANNEL_ACCESS_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN", "你的 token")
+LINE_CHANNEL_SECRET = os.getenv("LINE_CHANNEL_SECRET", "f6729885cc7fd58fe025bc0ef424709f")
 
-LINE_REPLY_URL = "https://api.line.me/v2/bot/message/reply"
-HEADERS = {
-    "Content-Type": "application/json",
-    "Authorization": f"Bearer {CHANNEL_ACCESS_TOKEN}"
-}
+line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
+handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
-def generate_voice(text: str) -> BytesIO:
-    response = openai.audio.speech.create(
-        model="tts-1",
-        voice="nova",
-        input=text
-    )
-    mp3_bytes = BytesIO(response.content)
-    return mp3_bytes
-
-def upload_audio_to_line(audio_bytes: BytesIO) -> str:
-    headers = {
-        "Authorization": f"Bearer {CHANNEL_ACCESS_TOKEN}",
-        "Content-Type": "audio/mpeg"
-    }
-    audio_bytes.seek(0)
-    response = requests.post("https://api-data.line.me/v2/bot/richmenu/content", headers=headers, data=audio_bytes)
-    return response.json()
-
-@app.route("/callback", methods=['POST'])
+@app.route("/callback", methods=["POST"])
 def callback():
-    body = request.get_json()
+    signature = request.headers["X-Line-Signature"]
+    body = request.get_data(as_text=True)
 
-    if "events" not in body:
-        return "ok"
+    try:
+        handler.handle(body, signature)
+    except InvalidSignatureError:
+        abort(400)
 
-    for event in body["events"]:
-        if event["type"] == "message" and event["message"]["type"] == "text":
-            user_text = event["message"]["text"]
-            reply_token = event["replyToken"]
+    return "OK"
 
-            voice = generate_voice(user_text)
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+    user_text = event.message.text
+    reply_token = event.reply_token
 
-            # LINE 不允許直接上傳音訊給 reply API，只能回傳 audio message
-            audio_message = {
-                "type": "audio",
-                "originalContentUrl": "https://yourserver.com/static/voice.mp3",
-                "duration": 2000
-            }
-            requests.post(LINE_REPLY_URL, headers=HEADERS, json={
-                "replyToken": reply_token,
-                "messages": [audio_message]
-            })
+    # 使用 gTTS 生成語音
+    tts = gTTS(text=user_text, lang='zh-tw')
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp:
+        voice_path = tmp.name
+        tts.save(voice_path)
 
-            # 同時將語音存檔（方便下載或測試）
-            with open("static/voice.mp3", "wb") as f:
-                f.write(voice.read())
+    # 上傳至 file.io，取得公開連結
+    with open(voice_path, 'rb') as f:
+        response = requests.post("https://file.io/?expires=1d", files={"file": f})
+        voice_url = response.json().get("link")
 
-    return 'OK'
+    if voice_url:
+        message = AudioSendMessage(
+            original_content_url=voice_url,
+            duration=4000  # 語音長度（毫秒）
+        )
+    else:
+        message = TextSendMessage(text="語音生成失敗，請稍後再試")
+
+    line_bot_api.reply_message(reply_token, message)
+
+# 可選的健康檢查端點
+@app.route("/", methods=["GET"])
+def health():
+    return "LINE bot is running"
 
 if __name__ == "__main__":
-    os.makedirs("static", exist_ok=True)
-    app.run(host='0.0.0.0', port=5000)
-
+    app.run()
