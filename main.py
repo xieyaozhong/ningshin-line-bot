@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 # LINE API key（請替換成妳的）
 LINE_CHANNEL_ACCESS_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN", "hxUFQfFxtfz/d54PHXNiLnapiTaRmBjyMYzeeUhzI4BZF8/sSiFSfV+SVOunurTc4jKvY/ZgbhvjqITjho604IYLz8SkC9l8G7zWuSLnPnC6q6rCY6Hs/GoNeQmEvN9+5pZh+svlwK+JEC9UEtWS+AdB04t89/1O/w1cDnyilFU=")
-LINE_CHANNEL_SECRET = os.getenv("LINE_CHANNEL_SECRET", "f6729885cc7fd58fe025bc0ef424709f")
+LINE_CHANNEL_SECRET = os.getenv("LINE_CHANNEL_SECRET", "cae453f8919cda65ae38c9ea661641ce")
 
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
