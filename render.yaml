@@ -15,3 +15,7 @@ services:
         sync: false
       - key: OPENAI_MODEL
         value: gpt-5-mini
+      - key: AUDIO_TTL_SECONDS
+        value: "900"
+      - key: MAX_USER_TEXT
+        value: "3000"
