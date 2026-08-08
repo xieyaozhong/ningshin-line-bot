@@ -1,0 +1,26 @@
+name: Smoke test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Compile Python
+        run: python -m compileall -q main.py threads_insights.py wsgi.py
+      - name: Import deployed app
+        env:
+          LINE_CHANNEL_ACCESS_TOKEN: test-token
+          LINE_CHANNEL_SECRET: test-secret
+        run: python -c "from wsgi import app; print(sorted(rule.rule for rule in app.url_map.iter_rules()))"
