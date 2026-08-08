@@ -1,67 +1,93 @@
-# 🌸 LINE Voice Bot — 寧心雪語音回覆系統
+# 🌸 寧心雪 LINE Bot
 
-這是一個使用 Flask 架構的 LINE 機器人，能夠自動回覆使用者的文字訊息為語音。  
-語音由 [gTTS](https://pypi.org/project/gTTS/) 生成，並透過 [file.io](https://www.file.io/) 短期託管給 LINE 播放。
+以 Flask + LINE Messaging API + OpenAI Responses API 建立的繁體中文 LINE 對話／語音 Bot。
 
----
+## 功能
 
-## 🚀 功能說明
+- LINE 文字訊息 webhook
+- 寧心雪 AI 對話人格（設定 `OPENAI_API_KEY` 後啟用）
+- gTTS 繁中語音回覆
+- Bot 自己提供短期 MP3 URL，不依賴 file.io
+- 實際偵測 MP3 長度後送給 LINE
+- 每位使用者保留目前執行程序內的短期對話上下文
+- 陪伴模式、開導模式、認真模式
+- 語音開啟／關閉、重置記憶
+- Render Blueprint / Gunicorn 部署設定
 
-- 接收 LINE 使用者的文字訊息
-- 將文字轉換為中文語音（gTTS）
-- 將語音上傳至 file.io 取得公開連結
-- 回傳語音訊息至用戶 LINE 聊天視窗
+## 指令
 
----
+在 LINE 直接輸入：
 
-## 🛠️ 環境需求
+- `陪伴模式`
+- `開導模式`
+- `認真模式`
+- `語音開啟`
+- `語音關閉`
+- `重置記憶`
+- `功能說明`
 
-- Python 3.8+
-- Flask
-- line-bot-sdk
-- gTTS
-- requests
-- python-dotenv
+## 必要環境變數
 
-安裝套件：
-
-```bash
-pip install -r requirements.txt
+```env
+LINE_CHANNEL_ACCESS_TOKEN=...
+LINE_CHANNEL_SECRET=...
 ```
 
----
+若要啟用 AI 對話，再設定：
 
-## 📂 環境變數設定
+```env
+OPENAI_API_KEY=...
+OPENAI_MODEL=gpt-5-mini
+```
 
-請在專案根目錄建立 `.env` 或於部署平台設定以下變數：
+可選：
 
-- `LINE_CHANNEL_ACCESS_TOKEN`
-- `LINE_CHANNEL_SECRET`
+```env
+PUBLIC_BASE_URL=https://your-service.onrender.com
+AUDIO_TTL_SECONDS=900
+MAX_USER_TEXT=3000
+```
 
----
+> 不要把真實 Token / Secret / API Key 寫進 GitHub。
 
-## 🧪 本機測試
+## 本機執行
 
 ```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
 python main.py
 ```
 
-搭配 [ngrok](https://ngrok.com/) 測試 webhook：
+LINE webhook 設為公開 HTTPS 網址的：
 
-```bash
-ngrok http 5000
+```text
+https://你的網域/callback
 ```
 
----
+## Render
 
-## 🧾 部署平台建議
+repo 已包含 `render.yaml`。建立 Blueprint 或把現有 Render Web Service 指向 `main` 分支即可。
 
-- [Render](https://render.com/)
-- [Railway](https://railway.app/)
+Build command：
 
----
+```text
+pip install -r requirements.txt
+```
 
-## 🙋 作者
+Start command：
 
-由使用者與 ChatGPT 共同建構  
-語音角色靈魂命名為：「寧心雪」
+```text
+gunicorn --workers 1 --threads 4 --timeout 120 --bind 0.0.0.0:$PORT main:app
+```
+
+Health check：`/healthz`
+
+## 記憶說明
+
+目前的對話狀態保存在執行中的服務記憶體，因此服務重新啟動或重新部署後會重置。若要做真正跨部署的長期記憶，可再接 PostgreSQL / Redis。
+
+## 安全提醒
+
+這個 repo 過去曾把 LINE Channel Access Token 與 Channel Secret 直接提交到公開 GitHub 歷史。即使目前版本已移除，舊 commit 仍可能看得到，因此應到 LINE Developers 重新發行／更換憑證，並只把新憑證放在部署平台的環境變數中。
