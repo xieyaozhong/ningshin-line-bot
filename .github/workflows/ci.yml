@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.5'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Import application
+        env:
+          LINE_CHANNEL_ACCESS_TOKEN: ''
+          LINE_CHANNEL_SECRET: ''
+          OPENAI_API_KEY: ''
+        run: python -c "import main; assert main.app is not None"
+
+      - name: Compile application
+        run: python -m py_compile main.py
