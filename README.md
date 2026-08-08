@@ -68,6 +68,8 @@ https://你的網域/callback
 
 ## Render
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/xieyaozhong/ningshin-line-bot)
+
 repo 已包含 `render.yaml`。建立 Blueprint 或把現有 Render Web Service 指向 `main` 分支即可。
 
 Build command：
