@@ -1,5 +1,7 @@
-flask
-line-bot-sdk
-gtts
-requests
-python-dotenv
+Flask>=3.1,<4
+line-bot-sdk==3.25.0
+gTTS>=2.5,<3
+mutagen==1.48.1
+openai>=2.47,<3
+python-dotenv>=1.1,<2
+gunicorn==26.0.0
