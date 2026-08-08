@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+*.mp3
+.venv/
+venv/
