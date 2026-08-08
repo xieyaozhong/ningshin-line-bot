@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Threads Signal｜資訊雷達</title>
+  <style>
+    :root{--bg:#071018;--panel:#0d1822;--panel2:#101e2a;--line:#203343;--text:#edf7ff;--muted:#8fa7b8;--accent:#7df9c8;--accent2:#8ab4ff;--warn:#ffd479;--bad:#ff8a8a;--shadow:0 22px 70px rgba(0,0,0,.34)}
+    *{box-sizing:border-box}html{background:var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif}body{margin:0;min-height:100vh;background:radial-gradient(circle at 15% 0%,rgba(125,249,200,.09),transparent 32%),radial-gradient(circle at 90% 10%,rgba(138,180,255,.10),transparent 30%),var(--bg)}
+    button,input,select{font:inherit}a{color:inherit}.wrap{width:min(1180px,calc(100% - 28px));margin:auto;padding:30px 0 70px}.top{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:24px}.eyebrow{font-size:12px;letter-spacing:.18em;color:var(--accent);font-weight:800}.title{font-size:clamp(31px,5vw,58px);line-height:1.03;margin:8px 0 10px;letter-spacing:-.04em}.sub{max-width:720px;color:var(--muted);line-height:1.7;margin:0}.status{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.pill{border:1px solid var(--line);background:rgba(255,255,255,.03);padding:8px 11px;border-radius:999px;color:var(--muted);font-size:12px}.pill.ok{color:var(--accent);border-color:rgba(125,249,200,.28)}.pill.no{color:var(--warn);border-color:rgba(255,212,121,.28)}
+    .panel{background:linear-gradient(180deg,rgba(16,30,42,.95),rgba(9,20,29,.96));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}.search{padding:18px}.query-row{display:grid;grid-template-columns:1fr auto;gap:10px}.query{width:100%;border:1px solid var(--line);background:#08131c;color:var(--text);border-radius:15px;padding:15px 16px;outline:none}.query:focus{border-color:rgba(125,249,200,.55);box-shadow:0 0 0 3px rgba(125,249,200,.08)}.btn{border:0;border-radius:15px;padding:0 20px;background:var(--accent);color:#04251a;font-weight:900;cursor:pointer;min-height:50px}.btn:disabled{opacity:.45;cursor:wait}.controls{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:12px}.field label{display:block;font-size:11px;color:var(--muted);margin:0 0 6px 3px}.field input,.field select{width:100%;height:42px;border-radius:11px;border:1px solid var(--line);background:#08131c;color:var(--text);padding:0 10px}.auto{display:flex;align-items:end;gap:8px}.auto-box{height:42px;width:100%;display:flex;align-items:center;gap:8px;padding:0 10px;border:1px solid var(--line);border-radius:11px;background:#08131c;color:var(--muted);font-size:13px}.auto-box input{accent-color:var(--accent)}
+    .notice{margin-top:12px;padding:12px 14px;border-radius:12px;background:rgba(255,212,121,.08);border:1px solid rgba(255,212,121,.18);color:#ffe4a5;font-size:13px;line-height:1.55}.hidden{display:none!important}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}.stat{padding:15px 16px}.stat b{display:block;font-size:26px;letter-spacing:-.04em}.stat span{font-size:12px;color:var(--muted)}
+    .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:18px 2px 10px}.toolbar h2{margin:0;font-size:17px}.toolbar-right{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:12px}.toggle{display:flex;align-items:center;gap:7px}.toggle input{accent-color:var(--accent)}
+    .results{display:grid;gap:12px}.card{padding:18px;display:grid;grid-template-columns:74px 1fr;gap:16px}.score{width:66px;height:66px;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#08131c;border:1px solid var(--line)}.score strong{font-size:24px}.score small{font-size:10px;color:var(--muted)}.meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;color:var(--muted);font-size:12px}.user{color:var(--text);font-weight:800}.verified{color:var(--accent2)}.cat{padding:4px 8px;border-radius:999px;background:rgba(125,249,200,.08);color:var(--accent);border:1px solid rgba(125,249,200,.16)}.post{white-space:pre-wrap;line-height:1.65;margin:10px 0 12px;color:#dcebf5}.insight{background:rgba(138,180,255,.06);border-left:3px solid var(--accent2);padding:11px 12px;border-radius:0 10px 10px 0;margin:10px 0}.insight b{display:block;font-size:12px;color:#a9c5ff;margin-bottom:5px}.insight p{margin:0;color:#c8d8e4;line-height:1.55;font-size:13px}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chip{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:5px 8px;color:var(--muted)}.links{display:flex;gap:12px;margin-top:12px}.links a{font-size:12px;color:var(--accent2);text-decoration:none}.empty{padding:55px 20px;text-align:center;color:var(--muted)}.loading{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,.2);border-top-color:#04251a;border-radius:50%;animation:spin .7s linear infinite;margin-right:7px;vertical-align:-2px}@keyframes spin{to{transform:rotate(360deg)}}
+    @media(max-width:900px){.controls{grid-template-columns:repeat(3,1fr)}.stats{grid-template-columns:repeat(2,1fr)}.top{display:block}.status{justify-content:flex-start;margin-top:14px}}@media(max-width:600px){.wrap{width:min(100% - 18px,1180px);padding-top:20px}.query-row{grid-template-columns:1fr}.controls{grid-template-columns:repeat(2,1fr)}.btn{height:50px}.card{grid-template-columns:1fr}.score{width:100%;height:48px;flex-direction:row;gap:6px}.score strong{font-size:20px}.title{font-size:38px}.stats{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">THREADS SIGNAL</div>
+      <h1 class="title">公開資訊雷達</h1>
+      <p class="sub">自動搜尋 Threads 公開貼文，過濾雜訊，優先找出數據、工具、案例、教學、政策與產品更新。每一筆都保留原始來源，方便你回頭查證。</p>
+    </div>
+    <div class="status">
+      <span class="pill {{ 'ok' if threads_configured else 'no' }}">Threads API {{ '已連線' if threads_configured else '未設定' }}</span>
+      <span class="pill {{ 'ok' if ai_enabled else '' }}">AI 分析 {{ '開啟' if ai_enabled else '規則模式' }}</span>
+    </div>
+  </header>
+
+  <section class="panel search">
+    <div class="query-row">
+      <input id="query" class="query" placeholder="輸入關鍵字；多個主題用逗號分隔，例如：AI 教材, 台中咖啡, 開源自動化">
+      <button id="searchBtn" class="btn">開始掃描</button>
+    </div>
+    <div class="controls">
+      <div class="field"><label>排序</label><select id="searchType"><option value="RECENT">最新</option><option value="TOP">熱門</option></select></div>
+      <div class="field"><label>搜尋模式</label><select id="searchMode"><option value="KEYWORD">關鍵字</option><option value="TAG">Topic Tag</option></select></div>
+      <div class="field"><label>每關鍵字筆數</label><select id="limit"><option>10</option><option selected>15</option><option>20</option><option>25</option></select></div>
+      <div class="field"><label>最低價值分數</label><select id="minScore"><option value="0">全部</option><option value="35">35+</option><option value="55" selected>55+</option><option value="75">75+</option></select></div>
+      <div class="field"><label>起始日期</label><input id="since" type="date"></div>
+      <div class="field"><label>結束日期</label><input id="until" type="date"></div>
+      <div class="field auto"><div class="auto-box"><input id="autoScan" type="checkbox"><span>自動監測</span></div></div>
+      <div class="field"><label>監測間隔</label><select id="interval"><option value="300000">5 分鐘</option><option value="900000" selected>15 分鐘</option><option value="1800000">30 分鐘</option></select></div>
+    </div>
+    <div id="notice" class="notice {{ '' if not threads_configured else 'hidden' }}">目前頁面已部署，但還沒有 <b>THREADS_ACCESS_TOKEN</b>。到 Render → Environment 新增它，而且該 Threads Token 必須取得 <b>threads_keyword_search</b> 權限，搜尋才會真正開始。</div>
+  </section>
+
+  <div class="stats">
+    <div class="panel stat"><b id="count">—</b><span>取得貼文</span></div>
+    <div class="panel stat"><b id="useful">—</b><span>判定有用</span></div>
+    <div class="panel stat"><b id="avg">—</b><span>平均價值分數</span></div>
+    <div class="panel stat"><b id="last">—</b><span>最近掃描</span></div>
+  </div>
+
+  <div class="toolbar">
+    <h2>情報結果</h2>
+    <div class="toolbar-right"><label class="toggle"><input id="usefulOnly" type="checkbox" checked> 只看有用</label><span id="modeLabel"></span></div>
+  </div>
+  <main id="results" class="results"><div class="panel empty">輸入主題後開始掃描。頁面開啟時可啟用「自動監測」，定時重新抓取最新 Threads 公開貼文。</div></main>
+</div>
+<script>
+const $=id=>document.getElementById(id);let timer=null,lastItems=[];
+const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+function fmtTime(v){if(!v)return '時間未知';const d=new Date(v);return isNaN(d)?v:d.toLocaleString('zh-TW',{hour12:false});}
+function save(){localStorage.setItem('threads-signal',JSON.stringify({query:$('query').value,searchType:$('searchType').value,searchMode:$('searchMode').value,limit:$('limit').value,minScore:$('minScore').value,since:$('since').value,until:$('until').value,autoScan:$('autoScan').checked,interval:$('interval').value,usefulOnly:$('usefulOnly').checked}));}
+function restore(){try{const s=JSON.parse(localStorage.getItem('threads-signal')||'{}');for(const k of ['query','searchType','searchMode','limit','minScore','since','until','interval'])if(s[k]!=null&&$(k))$(k).value=s[k];if(s.autoScan!=null)$('autoScan').checked=s.autoScan;if(s.usefulOnly!=null)$('usefulOnly').checked=s.usefulOnly;}catch(e){}}
+function render(){const only=$('usefulOnly').checked;const items=only?lastItems.filter(x=>x.useful):lastItems;if(!items.length){$('results').innerHTML='<div class="panel empty">目前沒有符合條件的高價值貼文。可以降低最低分數，或換一組關鍵字。</div>';return;}$('results').innerHTML=items.map(x=>`<article class="panel card"><div class="score"><strong>${esc(x.score)}</strong><small>/100</small></div><div><div class="meta"><span class="user">@${esc(x.username||'unknown')}</span>${x.is_verified?'<span class="verified">✓ verified</span>':''}<span>${esc(fmtTime(x.timestamp))}</span><span class="cat">${esc(x.category)}</span></div><div class="post">${esc(x.text)}</div><div class="insight"><b>情報摘要</b><p>${esc(x.summary)}</p></div><div class="insight"><b>價值判斷</b><p>${esc(x.why)}</p></div><div class="chips">${(x.signals||[]).map(s=>`<span class="chip">${esc(s)}</span>`).join('')}${(x.matched_keywords||[]).map(s=>`<span class="chip"># ${esc(s)}</span>`).join('')}</div><div class="links">${x.permalink?`<a href="${esc(x.permalink)}" target="_blank" rel="noopener">開啟 Threads 原文 ↗</a>`:''}${x.link_attachment_url?`<a href="${esc(x.link_attachment_url)}" target="_blank" rel="noopener">外部來源 ↗</a>`:''}</div></div></article>`).join('');}
+async function scan(){const q=$('query').value.trim();if(!q){$('query').focus();return;}save();const btn=$('searchBtn');btn.disabled=true;btn.innerHTML='<span class="loading"></span>掃描中';$('results').innerHTML='<div class="panel empty">正在從 Threads 搜尋並分析公開貼文…</div>';try{const res=await fetch('/api/threads/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:q,search_type:$('searchType').value,search_mode:$('searchMode').value,limit:Number($('limit').value),min_score:Number($('minScore').value),since:$('since').value,until:$('until').value})});const data=await res.json();if(!res.ok)throw new Error([data.error,data.detail,data.action].filter(Boolean).join(' '));lastItems=data.items||[];$('count').textContent=data.count??0;$('useful').textContent=data.useful_count??0;$('avg').textContent=data.average_score??0;$('last').textContent=new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',hour12:false});$('modeLabel').textContent=data.ai_analyzed?'AI 已分析':'規則分析';render();}catch(e){$('results').innerHTML=`<div class="panel empty" style="color:#ffd0d0">${esc(e.message||'搜尋失敗')}</div>`;}finally{btn.disabled=false;btn.textContent='開始掃描';}}
+function schedule(){if(timer)clearInterval(timer);timer=null;if($('autoScan').checked){timer=setInterval(()=>{if(document.visibilityState==='visible')scan();},Number($('interval').value));}save();}
+$('searchBtn').addEventListener('click',scan);$('query').addEventListener('keydown',e=>{if(e.key==='Enter')scan();});$('usefulOnly').addEventListener('change',()=>{save();render();});$('autoScan').addEventListener('change',schedule);$('interval').addEventListener('change',schedule);document.querySelectorAll('input,select').forEach(el=>el.addEventListener('change',save));restore();schedule();
+</script>
+</body>
+</html>
